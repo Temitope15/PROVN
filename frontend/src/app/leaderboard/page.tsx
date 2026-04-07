@@ -73,7 +73,7 @@ export default function LeaderboardPage() {
   return (
     <>
       <Navbar />
-      <main className="relative min-h-screen pt-28 pb-16">
+      <main className="relative min-h-screen pt-28 pb-16 overflow-hidden">
         <GlowOrb color="purple" size={350} top="5%" right="-5%" opacity={0.06} />
 
         <div className="max-w-4xl mx-auto px-6">

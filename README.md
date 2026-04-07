@@ -9,7 +9,6 @@ In the decentralized world, a resume is just a list of claims. PROVN turns those
 ### Key Features
 - **AI-Powered Scoring**: Uses Google Gemini to evaluate wallets against a nuanced developer rubric.
 - **Etherlink Native**: Fully integrated with the Etherlink ecosystem (Tezos EVM).
-- **Interactive Landing Page**: Modern bento grid features, infinite marquee for social proof, and cinematic technical animations.
 - **Social Sharing & Export**: One-click sharing to X (Twitter) and LinkedIn; exportable GitHub badges and React/HTML components for site integration.
 - **Live Leaderboard**: Real-time ranking of top contributors fetched from the Etherlink Explorer API.
 - **Soulbound RepNFT**: Your reputation stays with your wallet — non-transferable and verifiable.

@@ -19,7 +19,7 @@ export default function Marquee({
   const isRight = direction === 'right'
 
   return (
-    <div className={`flex overflow-hidden select-none gap-8 ${className}`}>
+    <div className={`flex w-full overflow-hidden select-none gap-8 ${className}`}>
       <motion.div
         animate={{
           x: isRight ? [ '-50%', '0%' ] : [ '0%', '-50%' ],

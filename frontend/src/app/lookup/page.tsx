@@ -83,7 +83,7 @@ export default function LookupPage() {
   return (
     <>
       <Navbar />
-      <main className="relative min-h-screen pt-28 pb-16">
+      <main className="relative min-h-screen pt-28 pb-16 overflow-hidden">
         <GlowOrb color="purple" size={400} top="10%" left="-5%" opacity={0.06} />
         <GlowOrb color="cyan" size={200} bottom="20%" right="5%" opacity={0.05} />
 
