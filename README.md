@@ -9,8 +9,10 @@ In the decentralized world, a resume is just a list of claims. PROVN turns those
 ### Key Features
 - **AI-Powered Scoring**: Uses Google Gemini to evaluate wallets against a nuanced developer rubric.
 - **Etherlink Native**: Fully integrated with the Etherlink ecosystem (Tezos EVM).
+- **Interactive Landing Page**: Modern bento grid features, infinite marquee for social proof, and cinematic technical animations.
+- **Social Sharing & Export**: One-click sharing to X (Twitter) and LinkedIn; exportable GitHub badges and React/HTML components for site integration.
+- **Live Leaderboard**: Real-time ranking of top contributors fetched from the Etherlink Explorer API.
 - **Soulbound RepNFT**: Your reputation stays with your wallet — non-transferable and verifiable.
-- **Interactive Dashboard**: A premium, cinematic interface to visualization your impact.
 
 ---
 
@@ -29,7 +31,7 @@ PROVN utilizes the **Google Gemini 2.5-flash** model as its core reasoning engin
 PROVN is built specifically for **Etherlink**, leveraging its high performance and low fees to maintain a live on-chain reputation system.
 
 - **Deployment**: The `RepNFT` contract is deployed on the **Etherlink Shadownet**.
-- **Contract Address**: `0x0170c1347BceaA395D391F686ba0E67d7001ccD0`
+- **Explorer API**: Integration with the **Blockscout API** for real-time leaderboard data and address indexing.
 - **On-chain Oracle**: The backend acts as a decentralized oracle, writing score updates directly to the RepNFT metadata via the `updateScore` function.
 
 ---

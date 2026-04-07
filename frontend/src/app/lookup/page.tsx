@@ -9,6 +9,7 @@ import NFTCard from '@/components/NFTCard'
 import ExportModal from '@/components/ExportModal'
 import { analyzeWallet, AnalyzeResult } from '@/lib/api'
 import { useWallet } from '@/context/WalletContext'
+import { useSearchParams } from 'next/navigation'
 import { Share2, Twitter, Linkedin, Github, Download, ExternalLink, Code } from 'lucide-react'
 
 const loadingMessages = [
@@ -22,6 +23,7 @@ type PageState = 'idle' | 'loading' | 'results' | 'error'
 
 export default function LookupPage() {
   const { address: connectedAddress, isConnected } = useWallet()
+  const searchParams = useSearchParams()
   const [address, setAddress] = useState('')
   const [github, setGithub] = useState('')
   const [state, setState] = useState<PageState>('idle')
@@ -31,12 +33,16 @@ export default function LookupPage() {
   const [toast, setToast] = useState('')
   const [isExportOpen, setIsExportOpen] = useState(false)
 
-  // Auto-fill address if connected
+  // Auto-fill address if connected or from query param
   useEffect(() => {
-    if (isConnected && connectedAddress && !address) {
+    const queryAddress = searchParams.get('address')
+    if (queryAddress && state === 'idle') {
+      setAddress(queryAddress)
+      performAnalysis(queryAddress)
+    } else if (isConnected && connectedAddress && !address) {
       setAddress(connectedAddress)
     }
-  }, [isConnected, connectedAddress, address])
+  }, [isConnected, connectedAddress, searchParams])
 
   useEffect(() => {
     if (state !== 'loading') return
@@ -49,14 +55,17 @@ export default function LookupPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!address.trim()) return
+    performAnalysis(address.trim(), github.trim() || undefined)
+  }
 
+  async function performAnalysis(addr: string, gh?: string) {
     setState('loading')
     setError('')
     setResult(null)
     setLoadingMsg(0)
 
     try {
-      const data = await analyzeWallet(address.trim(), github.trim() || undefined)
+      const data = await analyzeWallet(addr, gh)
       setResult(data)
       setState('results')
     } catch (err: unknown) {

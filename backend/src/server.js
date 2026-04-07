@@ -3,6 +3,7 @@ require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
 const express = require("express");
 const cors = require("cors");
 const { runOracle } = require("./oracle/index");
+const { fetchTopContributors } = require("./collectors/leaderboard");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -12,6 +13,16 @@ app.use(express.json());
 
 app.get("/health", (_req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
+});
+
+app.get("/leaderboard", async (_req, res) => {
+  try {
+    const data = await fetchTopContributors();
+    res.json(data);
+  } catch (error) {
+    console.error("Leaderboard route error:", error.message);
+    res.status(500).json({ error: "Failed to fetch leaderboard" });
+  }
 });
 
 app.post("/analyze", async (req, res) => {

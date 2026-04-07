@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import { useRouter } from 'next/navigation'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import GlowOrb from '@/components/GlowOrb'
@@ -18,19 +19,7 @@ interface LeaderboardEntry {
   txns: number
 }
 
-// TODO: replace with real contract event data
-const mockData: LeaderboardEntry[] = [
-  { rank: 1, wallet: '0x7a3b...4f2e', tier: 'Core Dev', score: 92, contracts: 12, txns: 847 },
-  { rank: 2, wallet: '0x1d8e...9c3a', tier: 'Core Dev', score: 87, contracts: 8, txns: 623 },
-  { rank: 3, wallet: '0x5f2c...1d7b', tier: 'Core Dev', score: 78, contracts: 6, txns: 510 },
-  { rank: 4, wallet: '0x9e4a...3f8c', tier: 'Contributor', score: 65, contracts: 4, txns: 389 },
-  { rank: 5, wallet: '0x2b7d...6e1a', tier: 'Contributor', score: 58, contracts: 3, txns: 276 },
-  { rank: 6, wallet: '0xc3f1...8a4d', tier: 'Contributor', score: 52, contracts: 2, txns: 198 },
-  { rank: 7, wallet: '0x6d9e...2c5f', tier: 'Builder', score: 38, contracts: 1, txns: 124 },
-  { rank: 8, wallet: '0xa1b4...7e3c', tier: 'Builder', score: 31, contracts: 1, txns: 89 },
-  { rank: 9, wallet: '0x8c2f...5d9a', tier: 'Builder', score: 25, contracts: 0, txns: 54 },
-  { rank: 10, wallet: '0x4e7a...1b6d', tier: 'Newcomer', score: 12, contracts: 0, txns: 7 },
-]
+// Data will be fetched from backend
 
 const filters: (Tier | 'All')[] = ['All', 'Core Dev', 'Contributor', 'Builder']
 
@@ -59,9 +48,27 @@ const row = {
 }
 
 export default function LeaderboardPage() {
+  const router = useRouter()
   const [filter, setFilter] = useState<Tier | 'All'>('All')
+  const [data, setData] = useState<LeaderboardEntry[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
-  const filtered = filter === 'All' ? mockData : mockData.filter((e) => e.tier === filter)
+  useEffect(() => {
+    async function fetchLeaderboard() {
+      try {
+        const res = await fetch('http://localhost:3001/leaderboard')
+        const json = await res.json()
+        setData(json)
+      } catch (err) {
+        console.error('Failed to fetch leaderboard:', err)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    fetchLeaderboard()
+  }, [])
+
+  const filtered = filter === 'All' ? data : data.filter((e) => e.tier === filter)
 
   return (
     <>
@@ -92,8 +99,9 @@ export default function LeaderboardPage() {
             ))}
           </motion.div>
 
-          {/* Table */}
-          <div className="glass overflow-hidden">
+          {/* Table Container */}
+          <div className="glass overflow-x-auto">
+            <div className="min-w-[500px]">
             {/* Header */}
             <div className="grid grid-cols-[60px_1fr_100px_80px_90px_80px] md:grid-cols-[60px_1fr_120px_80px_100px_80px] gap-2 px-5 py-3 text-xs font-medium text-text-dim uppercase tracking-wider border-b border-white/[0.04]">
               <div>Rank</div>
@@ -108,9 +116,10 @@ export default function LeaderboardPage() {
             <motion.div variants={stagger} initial="hidden" animate="show">
               {filtered.map((entry) => (
                 <motion.div
-                  key={entry.rank}
+                  key={entry.wallet}
                   variants={row}
-                  className={`grid grid-cols-[60px_1fr_100px_80px_90px_80px] md:grid-cols-[60px_1fr_120px_80px_100px_80px] gap-2 px-5 py-4 items-center border-b border-white/[0.03] hover:bg-white/[0.02] hover:border-l-2 hover:border-l-accent transition-all group ${
+                  onClick={() => router.push(`/lookup?address=${entry.wallet}`)}
+                  className={`grid grid-cols-[60px_1fr_100px_80px_90px_80px] md:grid-cols-[60px_1fr_120px_80px_100px_80px] gap-2 px-5 py-4 items-center border-b border-white/[0.03] hover:bg-white/[0.04] hover:border-l-2 hover:border-l-accent transition-all group cursor-pointer ${
                     entry.rank <= 3 ? 'bg-white/[0.01]' : ''
                   }`}
                 >
@@ -136,11 +145,19 @@ export default function LeaderboardPage() {
               ))}
             </motion.div>
 
-            {filtered.length === 0 && (
+            {isLoading && (
+              <div className="px-5 py-24 text-center">
+                <div className="inline-block w-8 h-8 border-2 border-accent/20 border-t-accent rounded-full animate-spin mb-4" />
+                <p className="text-text-dim text-sm">Syncing with Etherlink...</p>
+              </div>
+            )}
+
+            {!isLoading && filtered.length === 0 && (
               <div className="px-5 py-12 text-center text-text-dim">
                 No entries found for this filter.
               </div>
             )}
+            </div>
           </div>
         </div>
       </main>
