@@ -80,16 +80,21 @@ PROVN is organized as a clean monorepo.
    ```
 
 ---
-<!-- 
+
 ## 👥 Team
 
-- **[Team Member 1]**: role / contribution
-- **[Team Member 2]**: role / contribution
-- **[Team Member 3]**: role / contribution
+- **Temitope15**: Lead Developer 
 
-*(Team section to be updated before submission)*
+*(Include other team members here if applicable)*
 
---- -->
+## 🎥 Demo
+[Link to Demo Video](https://github.com/Temitope15/PROVN) 
+
+## 📜 Technical Compliance
+- **Blockchain**: Deployed on **Etherlink Shadownet** (Testnet).
+- **Contract Address**: `0x0170c1347BceaA395D391F686ba0E67d7001ccD0`
+- **AI Integration**: Powered by **Google Gemini 2.5-flash** for sophisticated reputation analysis.
+- **License**: MIT (Open Source)
 
 ## 📄 License
 This project is licensed under the MIT License.

@@ -8,7 +8,7 @@ const { fetchTopContributors } = require("./collectors/leaderboard");
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-app.use(cors({ origin: process.env.FRONTEND_URL || "*" }));
+app.use(cors({ origin: "*" }));
 app.use(express.json());
 
 app.get("/health", (_req, res) => {

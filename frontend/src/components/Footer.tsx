@@ -12,13 +12,13 @@ export default function Footer() {
           </div>
 
           <div className="flex justify-center gap-6">
-            <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-sm text-text-muted hover:text-text-primary transition-colors">
+            <a href="https://github.com/Temitope15/PROVN" target="_blank" rel="noopener noreferrer" className="text-sm text-text-muted hover:text-text-primary transition-colors">
               GitHub
             </a>
             <a href="https://explorer.etherlink.com" target="_blank" rel="noopener noreferrer" className="text-sm text-text-muted hover:text-text-primary transition-colors">
               Explorer
             </a>
-            <a href="#" className="text-sm text-text-muted hover:text-text-primary transition-colors">
+            <a href="https://docs.etherlink.com/" target="_blank" rel="noopener noreferrer" className="text-sm text-text-muted hover:text-text-primary transition-colors">
               Docs
             </a>
           </div>
