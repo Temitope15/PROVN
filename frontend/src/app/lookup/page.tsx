@@ -11,6 +11,7 @@ import { analyzeWallet, AnalyzeResult } from '@/lib/api'
 import { useWallet } from '@/context/WalletContext'
 import { useSearchParams } from 'next/navigation'
 import { Share2, Twitter, Linkedin, Github, Download, ExternalLink, Code } from 'lucide-react'
+import { Suspense } from 'react'
 
 const loadingMessages = [
   'Scanning Etherlink activity...',
@@ -22,6 +23,21 @@ const loadingMessages = [
 type PageState = 'idle' | 'loading' | 'results' | 'error'
 
 export default function LookupPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-background text-text-dim">
+        <div className="text-center">
+          <div className="inline-block w-8 h-8 border-2 border-accent/20 border-t-accent rounded-full animate-spin mb-4" />
+          <p>Loading application...</p>
+        </div>
+      </div>
+    }>
+      <LookupContent />
+    </Suspense>
+  )
+}
+
+function LookupContent() {
   const { address: connectedAddress, isConnected } = useWallet()
   const searchParams = useSearchParams()
   const [address, setAddress] = useState('')
@@ -234,7 +250,7 @@ export default function LookupPage() {
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={() => {
-                        const text = `I just got my PROVN reputation score: ${result.scoreResult.score}/100 🛡️\n\nCheck mine out at provn.xyz/lookup/${result.walletAddress}`
+                        const text = `I just got my PROVN reputation score: ${result.scoreResult.score}/100 🛡️\n\nCheck mine out at https://provn-two.vercel.app/lookup?address=${result.walletAddress}`
                         window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, '_blank')
                       }}
                       className="flex items-center justify-center gap-2 p-3 rounded-lg bg-white/5 border border-white/[0.06] hover:bg-white/10 transition-colors"
@@ -247,7 +263,7 @@ export default function LookupPage() {
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={() => {
-                        const url = `https://provn.xyz/lookup/${result.walletAddress}`
+                        const url = `https://provn-two.vercel.app/lookup?address=${result.walletAddress}`
                         window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank')
                       }}
                       className="flex items-center justify-center gap-2 p-3 rounded-lg bg-white/5 border border-white/[0.06] hover:bg-white/10 transition-colors"

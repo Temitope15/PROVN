@@ -74,8 +74,8 @@ PROVN is organized as a clean monorepo.
    ```bash
    # Start Backend (Port 3001)
    cd backend && npm start
-   
-   # Start Frontend (Port 3000)
+   # Start Frontend (Production)
+   # https://provn-two.vercel.app
    cd frontend && npm run dev
    ```
 
