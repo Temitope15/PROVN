@@ -1,0 +1,14 @@
+{
+  "name": "provn-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "contracts",
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "backend": "npm run start --workspace=backend",
+    "frontend": "npm run dev --workspace=frontend"
+  }
+}
