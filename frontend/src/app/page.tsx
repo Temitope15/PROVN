@@ -9,6 +9,9 @@ import TierBadge from '@/components/TierBadge'
 import Footer from '@/components/Footer'
 import HowItWorks from '@/components/HowItWorks'
 import TierCards from '@/components/TierCards'
+import Marquee from '@/components/Marquee'
+import BentoGrid, { BentoItem } from '@/components/BentoGrid'
+import { Shield, Zap, Code, Globe, UserCheck, Layers, Share2, Award } from 'lucide-react'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -44,19 +47,28 @@ export default function HomePage() {
       <Navbar />
 
       {/* HERO */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
         <GlowOrb color="purple" size={600} top="-10%" left="-5%" opacity={0.12} />
         <GlowOrb color="cyan" size={250} top="5%" right="10%" opacity={0.08} />
         <GlowOrb color="purple" size={400} bottom="5%" left="40%" opacity={0.08} />
 
+        {/* Magic UI Dotted Grid Background */}
+        <div 
+          className="absolute inset-0 z-0 opacity-[0.15]" 
+          style={{ 
+            backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.1) 1px, transparent 0)`,
+            backgroundSize: '32px 32px' 
+          }} 
+        />
+        
         <div
-          className="absolute inset-0 opacity-[0.04]"
+          className="absolute inset-0 opacity-[0.04] z-0"
           style={{
             backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 80px, rgba(255,255,255,0.15) 80px, rgba(255,255,255,0.15) 81px)',
           }}
         />
 
-        <div className="relative z-10 max-w-4xl mx-auto px-6 text-center pt-24 pb-16">
+        <div className="relative z-10 max-w-4xl mx-auto px-6 text-center pt-32 pb-16">
           <motion.div custom={0} variants={fadeUp} initial="hidden" animate="show" className="mb-6">
             <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/10 border border-accent/20 text-xs font-display text-accent-bright">
               ⬡ Built on Tezos EVM
@@ -113,6 +125,87 @@ export default function HomePage() {
             </div>
           </motion.div>
         </div>
+      </section>
+
+      {/* ECOSYSTEM MARQUEE */}
+      <section className="py-12 border-y border-white/[0.04] bg-background/50 backdrop-blur-sm overflow-hidden">
+        <div className="text-center mb-8">
+          <p className="text-[10px] uppercase tracking-[0.2em] text-text-dim font-bold">Powering Digital Identity Across</p>
+        </div>
+        <Marquee speed={60} className="mb-8">
+          {[
+            'Tezos EVM', 'GitHub', 'Aave', 'Uniswap', 'Gitcoin', 'Snapshot', 'Lens Protocol', 'Farcaster'
+          ].map((item, i) => (
+            <div key={i} className="flex items-center gap-2 px-8 py-2 rounded-xl bg-white/5 border border-white/[0.05] text-text-muted font-display text-lg whitespace-nowrap">
+              <div className="w-2 h-2 rounded-full bg-accent" />
+              {item}
+            </div>
+          ))}
+        </Marquee>
+        <Marquee speed={50} direction="right">
+          {[
+            'Open Source', 'DeFi Governance', 'Social Graph', 'Onchain Reputation', 'Soulbound Tokens', 'AI Verification'
+          ].map((item, i) => (
+            <div key={i} className="flex items-center gap-2 px-8 py-2 rounded-xl bg-accent/5 border border-accent/10 text-accent/80 font-display text-lg whitespace-nowrap">
+              <div className="w-2 h-2 rounded-full bg-accent-bright" />
+              {item}
+            </div>
+          ))}
+        </Marquee>
+      </section>
+
+      {/* FEATURES BENTO GRID */}
+      <section className="py-24 max-w-7xl mx-auto px-6">
+        <div className="text-center mb-16">
+          <h2 className="font-display font-bold text-4xl mb-4">Programmable Reputation.</h2>
+          <p className="text-text-muted max-w-xl mx-auto">Our AI engine aggregates multidimensional data to create a definitive trust score.</p>
+        </div>
+
+        <BentoGrid>
+          <BentoItem
+            title="Soulbound NFT"
+            description="Your reputation is non-transferable. It's truly yours, tied to your unique identity and work history."
+            icon={<Shield size={20} />}
+            className="md:col-span-2"
+            graphic={
+              <div className="flex gap-4 items-end justify-center w-full">
+                {[40, 70, 55].map((h, i) => (
+                  <motion.div 
+                    key={i}
+                    initial={{ height: 0 }}
+                    whileInView={{ height: h }}
+                    className="w-12 bg-accent/20 rounded-t-lg border border-accent/30 relative"
+                  >
+                    <div className="absolute top-2 left-1/2 -translate-x-1/2 text-[10px] font-mono text-accent">{h}</div>
+                  </motion.div>
+                ))}
+              </div>
+            }
+          />
+          <BentoItem
+            title="Real-time Scoring"
+            description="Connect your wallet and GitHub to see your score update instantly based on your latest activity."
+            icon={<Zap size={20} />}
+          />
+          <BentoItem
+            title="Developer Focus"
+            description="Deep integration with GitHub to analyze commits, PRs, and stars. We reward builders."
+            icon={<Code size={20} />}
+          />
+          <BentoItem
+            title="Multichain Data"
+            description="Currently on Tezos, expanding to more chains soon. We see the whole ecosystem."
+            icon={<Globe size={20} />}
+            className="md:col-span-2"
+            graphic={
+              <div className="relative w-full h-full flex items-center justify-center">
+                <div className="absolute w-24 h-24 rounded-full border border-dashed border-accent/30 animate-spin-slow" />
+                <div className="absolute w-40 h-40 rounded-full border border-dashed border-white/10 animate-spin-reverse-slow" />
+                <div className="w-12 h-12 rounded-full bg-accent/30 blur-xl" />
+              </div>
+            }
+          />
+        </BentoGrid>
       </section>
 
       {/* STATS BAR */}

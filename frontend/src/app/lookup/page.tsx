@@ -6,8 +6,10 @@ import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import GlowOrb from '@/components/GlowOrb'
 import NFTCard from '@/components/NFTCard'
+import ExportModal from '@/components/ExportModal'
 import { analyzeWallet, AnalyzeResult } from '@/lib/api'
 import { useWallet } from '@/context/WalletContext'
+import { Share2, Twitter, Linkedin, Github, Download, ExternalLink, Code } from 'lucide-react'
 
 const loadingMessages = [
   'Scanning Etherlink activity...',
@@ -27,6 +29,7 @@ export default function LookupPage() {
   const [error, setError] = useState('')
   const [loadingMsg, setLoadingMsg] = useState(0)
   const [toast, setToast] = useState('')
+  const [isExportOpen, setIsExportOpen] = useState(false)
 
   // Auto-fill address if connected
   useEffect(() => {
@@ -209,7 +212,75 @@ export default function LookupPage() {
                     Search Again
                   </motion.button>
                 </div>
+
+                {/* SHARE & EXPORT */}
+                <div className="glass p-6">
+                  <div className="flex items-center gap-2 mb-6 text-accent">
+                    <Share2 size={18} />
+                    <h3 className="font-display font-bold">Share your Reputation</h3>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => {
+                        const text = `I just got my PROVN reputation score: ${result.scoreResult.score}/100 🛡️\n\nCheck mine out at provn.xyz/lookup/${result.walletAddress}`
+                        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, '_blank')
+                      }}
+                      className="flex items-center justify-center gap-2 p-3 rounded-lg bg-white/5 border border-white/[0.06] hover:bg-white/10 transition-colors"
+                    >
+                      <Twitter size={16} />
+                      <span className="text-sm">X</span>
+                    </motion.button>
+
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => {
+                        const url = `https://provn.xyz/lookup/${result.walletAddress}`
+                        window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank')
+                      }}
+                      className="flex items-center justify-center gap-2 p-3 rounded-lg bg-white/5 border border-white/[0.06] hover:bg-white/10 transition-colors"
+                    >
+                      <Linkedin size={16} />
+                      <span className="text-sm">LinkedIn</span>
+                    </motion.button>
+
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => setIsExportOpen(true)}
+                      className="flex items-center justify-center gap-2 p-3 rounded-lg bg-accent/20 border border-accent/20 text-accent hover:bg-accent/30 transition-colors"
+                    >
+                      <Github size={16} />
+                      <span className="text-sm">GitHub</span>
+                    </motion.button>
+
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => setIsExportOpen(true)}
+                      className="flex items-center justify-center gap-2 p-3 rounded-lg bg-accent/20 border border-accent/20 text-accent hover:bg-accent/30 transition-colors"
+                    >
+                      <Code size={16} />
+                      <span className="text-sm">Export</span>
+                    </motion.button>
+                  </div>
+                </div>
               </motion.div>
+            )}
+
+            {result && (
+              <ExportModal 
+                isOpen={isExportOpen} 
+                onClose={() => setIsExportOpen(false)} 
+                data={{
+                  walletAddress: result.walletAddress,
+                  score: result.scoreResult.score,
+                  tier: result.scoreResult.tier
+                }}
+              />
             )}
 
             {state === 'error' && (
