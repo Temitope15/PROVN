@@ -56,7 +56,8 @@ export default function LeaderboardPage() {
   useEffect(() => {
     async function fetchLeaderboard() {
       try {
-        const res = await fetch('http://localhost:3001/leaderboard')
+        const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+        const res = await fetch(`${apiBase}/leaderboard`)
         const json = await res.json()
         setData(json)
       } catch (err) {
