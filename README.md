@@ -17,7 +17,7 @@ In the decentralized world, a resume is just a list of claims. PROVN turns those
 
 ## 🧠 AI Component
 
-PROVN utilizes the **Google Gemini 2.5-flash** model as its core reasoning engine. 
+PROVN utilizes the **Google Gemini 2.0-flash** model as its core reasoning engine. 
 
 - **Data Aggregation**: The oracle collects raw data from Etherlink (tx count, contract deployments, protocol diversity) and GitHub (repo impact, commit frequency, top languages).
 - **Nuanced Rubric**: Instead of simple linear scoring, Gemini evaluates the *quality* of activity. A contract deployer earns more "Builder" points, while a high-volume swapper earns "DeFi Enthusiast" marks.
@@ -93,7 +93,7 @@ PROVN is organized as a clean monorepo.
 ## 📜 Technical Compliance
 - **Blockchain**: Deployed on **Etherlink Shadownet** (Testnet).
 - **Contract Address**: `0x0170c1347BceaA395D391F686ba0E67d7001ccD0`
-- **AI Integration**: Powered by **Google Gemini 2.5-flash** for sophisticated reputation analysis.
+- **AI Integration**: Powered by **Google Gemini 1.5-flash** for sophisticated reputation analysis.
 - **License**: MIT (Open Source)
 
 ## 📄 License

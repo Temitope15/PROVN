@@ -13,16 +13,55 @@ const DEFAULT_SCORE = {
   ],
 };
 
+function getDynamicFallback(collectedData) {
+  const improvements = [];
+  const strengths = [];
+  const github = collectedData.github || {};
+  const onchain = collectedData.onchain || {};
+  const defi = collectedData.defi || {};
+  
+  const githubUser = collectedData.githubUsername || github.githubUsername;
+
+  
+  if (githubUser) strengths.push("Verified Developer Identity");
+  if ((github.totalRepos || 0) > 20) strengths.push("Prolific Open Source Contributor");
+  if ((github.totalStars || 0) > 10) strengths.push("Community Recognized Repos");
+  if ((onchain.totalTxCount || 0) > 0) strengths.push("Onchain History Authenticated");
+
+ 
+  if (!githubUser) improvements.push("Link a GitHub account to prove development work");
+  else if ((github.totalCommits || 0) < 10) improvements.push("Increase your contribution frequency on GitHub");
+
+  if ((onchain.totalTxCount || 0) < 5) improvements.push("Perform more onchain transactions on Etherlink");
+  if ((onchain.contractsDeployed || 0) === 0) improvements.push("Deploy a smart contract to demonstrate builder activity");
+
+  if ((defi.swapCount || 0) === 0) improvements.push("Interact with DeFi protocols like Aave or Uniswap on Etherlink");
+
+  while (improvements.length < 3) {
+    improvements.push("Explore and interact with more decentralised applications");
+    if (improvements.length >= 3) break;
+  }
+
+  return {
+    score: 0,
+    tier: "Newcomer",
+    justification: "Scoring fallback — AI analysis briefly unavailable, showing data-driven recommendations.",
+    strengths: strengths.slice(0, 3),
+    improvements: improvements.slice(0, 3),
+  };
+}
+
 async function scoreWallet(collectedData) {
   try {
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
       console.error("GEMINI_API_KEY not set in environment");
-      return { ...DEFAULT_SCORE };
+      return getDynamicFallback(collectedData);
     }
 
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
     const prompt = buildScoringPrompt(collectedData);
 
@@ -37,7 +76,6 @@ async function scoreWallet(collectedData) {
     const response = result.response;
     let text = "";
 
-    
     if (response.candidates && response.candidates[0]) {
       const parts = response.candidates[0].content.parts;
       for (const part of parts) {
@@ -84,7 +122,7 @@ async function scoreWallet(collectedData) {
     return parsed;
   } catch (error) {
     console.error("Scorer error:", error.message);
-    return { ...DEFAULT_SCORE };
+    return getDynamicFallback(collectedData);
   }
 }
 
