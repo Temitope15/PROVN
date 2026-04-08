@@ -20,101 +20,97 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [isConnecting, setIsConnecting] = useState(false)
   const [chainName, setChainName] = useState<string | null>(null)
 
-  const checkConnection = useCallback(async () => {
-    if (typeof window !== 'undefined' && (window as any).ethereum) {
-      try {
-        const provider = new ethers.BrowserProvider((window as any).ethereum)
-        
-        // Timeout for account listing
-        const accountsPromise = provider.listAccounts()
-        const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Connection check timed out')), 3000)
-        )
+  const getEthereum = () => {
+    if (typeof window !== 'undefined') return (window as any).ethereum
+    return null
+  }
 
-        const accounts = await Promise.race([accountsPromise, timeoutPromise]) as any[]
-        
-        if (accounts.length > 0) {
-          const addr = accounts[0].address
-          setAddress(addr)
-          setIsConnected(true)
-          
-          try {
-            const network = await provider.getNetwork()
-            setChainName(network.name)
-          } catch (netErr) {
-            console.warn('Network check failed during auto-connect:', netErr)
-          }
+  const checkConnection = useCallback(async () => {
+    const ethereum = getEthereum()
+    if (!ethereum) return
+
+    try {
+      // eth_accounts is passive — it never triggers a MetaMask popup
+      const accounts: string[] = await ethereum.request({ method: 'eth_accounts' })
+
+      if (accounts.length > 0) {
+        setAddress(accounts[0])
+        setIsConnected(true)
+
+        try {
+          const chainId: string = await ethereum.request({ method: 'eth_chainId' })
+          setChainName(`Chain ${parseInt(chainId, 16)}`)
+        } catch {
+          setChainName(null)
         }
-      } catch (error) {
-        console.warn('Silent connection check failed:', error)
       }
+    } catch (err) {
+      console.warn('Silent connection check skipped:', err)
     }
   }, [])
 
   useEffect(() => {
     checkConnection()
 
-    if (typeof window !== 'undefined' && (window as any).ethereum) {
-      ;(window as any).ethereum.on('accountsChanged', (accounts: string[]) => {
-        if (accounts.length > 0) {
-          setAddress(accounts[0])
-          setIsConnected(true)
-        } else {
-          setAddress(null)
-          setIsConnected(false)
-        }
-      })
+    const ethereum = getEthereum()
+    if (!ethereum) return
 
-      ;(window as any).ethereum.on('chainChanged', () => {
-        window.location.reload()
-      })
+    const handleAccountsChanged = (accounts: string[]) => {
+      if (accounts.length > 0) {
+        setAddress(accounts[0])
+        setIsConnected(true)
+      } else {
+        setAddress(null)
+        setIsConnected(false)
+        setChainName(null)
+      }
+    }
+
+    const handleChainChanged = () => {
+      window.location.reload()
+    }
+
+    ethereum.on('accountsChanged', handleAccountsChanged)
+    ethereum.on('chainChanged', handleChainChanged)
+
+    return () => {
+      ethereum.removeListener('accountsChanged', handleAccountsChanged)
+      ethereum.removeListener('chainChanged', handleChainChanged)
     }
   }, [checkConnection])
 
   const connectWallet = async () => {
-    if (typeof window !== 'undefined' && (window as any).ethereum) {
-      setIsConnecting(true)
-      try {
-        console.log('Initiating wallet connection...')
-        // Using request directly as it's often more responsive than ethers wrapper for initial popup
-        const accounts = await (window as any).ethereum.request({ method: 'eth_requestAccounts' })
-        
-        if (accounts && accounts.length > 0) {
-          const addr = accounts[0]
-          setAddress(addr)
-          setIsConnected(true)
-          
-          const provider = new ethers.BrowserProvider((window as any).ethereum)
-          
-          // Add a timeout to getNetwork to prevent hanging if the network is slow/unresponsive
-          const networkPromise = provider.getNetwork()
-          const timeoutPromise = new Promise((_, reject) => 
-            setTimeout(() => reject(new Error('Network detection timed out')), 5000)
-          )
-
-          try {
-            const network = await Promise.race([networkPromise, timeoutPromise]) as ethers.Network
-            setChainName(network.name)
-            console.log('Connected to network:', network.name)
-          } catch (netError) {
-            console.warn('Network detection failed or timed out:', netError)
-            setChainName('Unknown Network')
-          }
-        }
-      } catch (error: any) {
-        console.error('Error connecting wallet:', error)
-        if (error.code === 4001) {
-          alert('Connection request rejected by user.')
-        } else if (error.code === -32002) {
-          alert('Request already pending in MetaMask. Please open your wallet extension.')
-        } else {
-          alert(`Connection failed: ${error.message || 'Unknown error'}`)
-        }
-      } finally {
-        setIsConnecting(false)
-      }
-    } else {
+    const ethereum = getEthereum()
+    if (!ethereum) {
       alert('Please install MetaMask or another Web3 wallet.')
+      return
+    }
+
+    setIsConnecting(true)
+    try {
+      const accounts: string[] = await ethereum.request({ method: 'eth_requestAccounts' })
+
+      if (accounts.length > 0) {
+        setAddress(accounts[0])
+        setIsConnected(true)
+
+        try {
+          const chainId: string = await ethereum.request({ method: 'eth_chainId' })
+          setChainName(`Chain ${parseInt(chainId, 16)}`)
+        } catch {
+          setChainName(null)
+        }
+      }
+    } catch (error: any) {
+      if (error.code === 4001) {
+        // User rejected — do nothing, don't spam alerts
+      } else if (error.code === -32002) {
+        alert('A connection request is already pending. Please open MetaMask and approve or reject it.')
+      } else {
+        console.error('Wallet connection error:', error)
+      }
+    } finally {
+      setIsConnecting(false)
     }
   }
 
