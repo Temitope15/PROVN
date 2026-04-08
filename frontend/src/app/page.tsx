@@ -77,7 +77,7 @@ export default function HomePage() {
 
           <motion.h1 custom={1} variants={fadeUp} initial="hidden" animate="show" className="font-display font-extrabold text-4xl sm:text-5xl md:text-7xl leading-tight mb-6">
             <span className="glassy-text">Your Contribution.</span><br />
-            <span className="vivid-purple-glow glow-text">Proven Onchain.</span>
+            <span className="vivid-purple-glow">Proven Onchain.</span>
           </motion.h1>
 
           <motion.p custom={2} variants={fadeUp} initial="hidden" animate="show" className="font-light text-text-muted text-base md:text-lg max-w-xl mx-auto mb-10 leading-relaxed">
