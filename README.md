@@ -5,8 +5,8 @@
 In the decentralized world, a resume is just a list of claims. PROVN turns those claims into **Proof**. By multi-threading data collection from on-chain transactions, GitHub commits, and DeFi interactions, our AI oracle generates a holistic reputation score that lives on the blockchain.
 
 ## Resources
-* **Demo Video** : [Insert YouTube/Loom Link Here]()
-* **Live Demo** : [https://provn-two.vercel.app](https://provn-two.vercel.app)
+* **Demo Video** : [View Here](https://www.youtube.com/watch?v=woc0LhkwvKU&pp=ygU0aG93IHRvIHZlcmlmeSBkZXZlbG9wZXJzIG9uIHRoZSBldGhlcmxpbmsgYmxvY2tjaGFpbg%3D%3D)
+* **Live Website** : [https://provn-two.vercel.app](https://provn-two.vercel.app)
 
 ---
 
@@ -165,6 +165,7 @@ The `RepNFT` contract acts as the on-chain ledger for reputation.
 
 ## Team
 - **Temitope15**: Software Engineer
+- **Drey**: Product Manager
 
 ## Technical Compliance
 - **Blockchain**: Deployed on **Etherlink Shadownet** (Testnet).
