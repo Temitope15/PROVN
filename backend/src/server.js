@@ -9,13 +9,16 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 const allowedOrigins = process.env.ALLOWED_ORIGINS 
-  ? process.env.ALLOWED_ORIGINS.split(",") 
-  : ["http://localhost:3000", "http://localhost:3001"];
+  ? process.env.ALLOWED_ORIGINS.split(",").map(o => o.trim().replace(/\/$/, ""))
+  : ["http://localhost:3002", "http://localhost:3001"];
 
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) === -1) {
+    
+    const cleanOrigin = origin.trim().replace(/\/$/, "");
+    if (allowedOrigins.indexOf(cleanOrigin) === -1) {
+      console.error(`CORS Blocked for origin: ${origin}`);
       return callback(new Error('CORS fail'), false);
     }
     return callback(null, true);

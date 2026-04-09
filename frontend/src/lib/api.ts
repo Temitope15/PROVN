@@ -32,7 +32,7 @@ export interface AnalyzeResult {
   collectedAt: string
 }
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001').replace(/\/$/, '')
 
 export async function analyzeWallet(
   walletAddress: string,

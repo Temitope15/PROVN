@@ -9,6 +9,21 @@ const DEFAULT_RESULT = {
   lastActiveBlock: 0,
 };
 
+const BATCH_SIZE = 25;
+const SCAN_RANGE = 500;
+
+async function fetchBlockBatch(provider, blockNumbers) {
+  const results = await Promise.allSettled(
+    blockNumbers.map((num) => {
+      const hex = "0x" + num.toString(16);
+      return provider.send("eth_getBlockByNumber", [hex, true]);
+    })
+  );
+  return results
+    .filter((r) => r.status === "fulfilled" && r.value && r.value.transactions)
+    .map((r) => r.value);
+}
+
 async function collectEtherlinkData(walletAddress) {
   try {
     const rpcUrl = process.env.RPC_URL;
@@ -21,20 +36,24 @@ async function collectEtherlinkData(walletAddress) {
     ]);
 
     const balance = ethers.formatEther(balanceWei);
-    const startBlock = Math.max(0, currentBlock - 500);
+    const startBlock = Math.max(0, currentBlock - SCAN_RANGE);
 
     let contractsDeployed = 0;
     const protocolSet = new Set();
     let lastActiveBlock = 0;
     const walletLower = walletAddress.toLowerCase();
 
+    const allBlockNums = [];
     for (let i = currentBlock; i > startBlock; i--) {
-      try {
-        const blockHex = "0x" + i.toString(16);
-        const block = await provider.send("eth_getBlockByNumber", [blockHex, true]);
+      allBlockNums.push(i);
+    }
 
-        if (!block || !block.transactions) continue;
+    for (let i = 0; i < allBlockNums.length; i += BATCH_SIZE) {
+      const batch = allBlockNums.slice(i, i + BATCH_SIZE);
+      const blocks = await fetchBlockBatch(provider, batch);
 
+      for (const block of blocks) {
+        const blockNum = parseInt(block.number, 16);
         for (const tx of block.transactions) {
           if (tx.from && tx.from.toLowerCase() === walletLower) {
             if (tx.to === null) {
@@ -42,13 +61,11 @@ async function collectEtherlinkData(walletAddress) {
             } else if (tx.to.toLowerCase() !== walletLower) {
               protocolSet.add(tx.to.toLowerCase());
             }
-            if (i > lastActiveBlock) {
-              lastActiveBlock = i;
+            if (blockNum > lastActiveBlock) {
+              lastActiveBlock = blockNum;
             }
           }
         }
-      } catch (blockErr) {
-        continue;
       }
     }
 

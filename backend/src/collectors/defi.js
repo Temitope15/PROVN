@@ -12,25 +12,43 @@ const DEFAULT_RESULT = {
   totalDefiTxs: 0,
 };
 
+const BATCH_SIZE = 25;
+const SCAN_RANGE = 300;
+
+async function fetchBlockBatch(provider, blockNumbers) {
+  const results = await Promise.allSettled(
+    blockNumbers.map((num) => {
+      const hex = "0x" + num.toString(16);
+      return provider.send("eth_getBlockByNumber", [hex, true]);
+    })
+  );
+  return results
+    .filter((r) => r.status === "fulfilled" && r.value && r.value.transactions)
+    .map((r) => r.value);
+}
+
 async function collectDefiData(walletAddress) {
   try {
     const rpcUrl = process.env.RPC_URL;
     const provider = new ethers.JsonRpcProvider(rpcUrl);
 
     const currentBlock = await provider.getBlockNumber();
-    const startBlock = Math.max(0, currentBlock - 300);
+    const startBlock = Math.max(0, currentBlock - SCAN_RANGE);
     const walletLower = walletAddress.toLowerCase();
 
     let swapCount = 0;
     let liquidityEvents = 0;
 
+    const allBlockNums = [];
     for (let i = currentBlock; i > startBlock; i--) {
-      try {
-        const blockHex = "0x" + i.toString(16);
-        const block = await provider.send("eth_getBlockByNumber", [blockHex, true]);
+      allBlockNums.push(i);
+    }
 
-        if (!block || !block.transactions) continue;
+    for (let i = 0; i < allBlockNums.length; i += BATCH_SIZE) {
+      const batch = allBlockNums.slice(i, i + BATCH_SIZE);
+      const blocks = await fetchBlockBatch(provider, batch);
 
+      for (const block of blocks) {
         for (const tx of block.transactions) {
           if (!tx.from || tx.from.toLowerCase() !== walletLower) continue;
           if (!tx.input || tx.input.length < 10) continue;
@@ -46,8 +64,6 @@ async function collectDefiData(walletAddress) {
             liquidityEvents++;
           }
         }
-      } catch (blockErr) {
-        continue;
       }
     }
 

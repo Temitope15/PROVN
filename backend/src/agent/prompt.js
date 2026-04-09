@@ -53,6 +53,15 @@ TIER RANGES (the score MUST match the tier):
   46–70:  "Contributor" — regular activity, open source involvement
   71–100: "Core Dev"    — heavy onchain usage, strong GitHub, DeFi activity
 
+IMPORTANT RULE: If the wallet has ZERO onchain transactions (totalTxCount = 0)
+but has GitHub activity (totalRepos > 0, totalCommits > 0), the wallet is still
+a "Newcomer" (score 5–20) because they have NOT yet started building on the
+blockchain. However, you MUST still acknowledge their GitHub strengths in the
+"strengths" array (e.g. "Active GitHub developer", "Open source contributions")
+and suggest blockchain-specific improvements (e.g. "Deploy a smart contract",
+"Interact with DeFi protocols on Etherlink"). Do NOT give a score of 0 if
+they have real GitHub activity — give 5–20 to reflect their developer potential.
+
 Respond with ONLY a valid JSON object. No markdown, no backticks,
 no explanation, no extra text — just raw JSON in this exact shape:
 {"score": <integer 0-100>, "tier": <one of: "Newcomer", "Builder", "Contributor", "Core Dev">, "justification": "<2 sentences max explaining the score>", "strengths": [<up to 3 short strings>], "improvements": [<up to 3 short strings>]}`;
