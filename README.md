@@ -5,7 +5,7 @@
 In the decentralized world, a resume is just a list of claims. PROVN turns those claims into **Proof**. By multi-threading data collection from on-chain transactions, GitHub commits, and DeFi interactions, our AI oracle generates a holistic reputation score that lives on the blockchain.
 
 ## Resources
-* **Demo Video** : [View Here](https://github.com/Temitope15/PROVN)
+* **Demo Video** : [Insert YouTube/Loom Link Here]()
 * **Live Demo** : [https://provn-two.vercel.app](https://provn-two.vercel.app)
 
 ---
